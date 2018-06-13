@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<title>北极光登录</title>
+	</head>
+
+	<body id="login-body" style="display: table;width:100%;height:100%; display:flex;justify-content:center;align-items:center;">
+		<div id="loginBox">
+			<h1>登录</h1>
+			<form action="" method="post" name="loginForm" id="loginForm">
+				<div class="login-box">
+					<i class="user"></i><input name="loginname" id="loginname" placeholder="用户名" />
+				</div>
+				<div class="login-box">
+					<i class="pw"></i><input name="password" id="password" type="password" placeholder="密码" />
+				</div>
+				<div class="login-box02">
+					<i class="yan">验</i>
+					<input type="text" name="code" id="code" class="login_code" />
+					<input id="to-login" value="登录" readonly="readonly" />
+				</div>
+			</form>
+		</div>
+		<script>
+			window.onload = function(){
+//			if(1){
+				console.log(1)
+//			}
+			}
+		</script>
+	</body>
+
+</html>

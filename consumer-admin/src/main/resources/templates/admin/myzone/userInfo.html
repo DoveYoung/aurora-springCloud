@@ -1,0 +1,78 @@
+<html lang="en" >
+	<head>
+		<title>个人信息</title>
+		<div th:replace="../templates/admin/index/headLink :: links"></div>
+	</head>
+
+	<body id="goodsEntry-body">
+		<div th:replace="../templates/admin/index/top :: top_black"></div>
+		<h1>个人信息</h1>
+		
+		<div id="entry-box">
+			<div class="password-box">
+				<i>用户角色:</i><input readonly="readonly" th:value="${user.roleNames}" style="border:0"/>
+			</div>
+			<div class="password-box">
+				<i>真实姓名:</i><input id="userRealName" th:value="${user.userRealName}"/>
+			</div>
+			<div class="password-box">
+				<i>用户名:</i><input id="userName" th:value="${user.userName}"/>
+			</div>
+			<div class="password-box">
+				<i>手机号:</i><input id="userMobile" th:value="${user.userMobile}"/>
+			</div>
+		
+			<div class="password-box">
+				<span id="sub-pw">确定</span>
+			</div>
+		</div>
+		
+		<script th:inline="javascript">
+			$('#sub-pw').on('click',function(){
+				if($('#userRealName').val() === ''){
+					return layer.msg('请输入真实姓名')
+				}
+				if($('#userName').val() === ''){
+					return layer.msg('请输入用户名')
+				}
+				if($('#userMobile').val() === ''){
+					return layer.msg('请输入手机号')
+				}
+				if($('#userEmail').val() === ''){
+					return layer.msg('请输入邮箱')
+				}
+				var userRealName = $('#userRealName').val();
+				var userName = $('#userName').val();
+				var userMobile = $('#userMobile').val();
+//				var userEmail = $('#userEmail').val();
+				$.ajax({
+					type:"post",
+					url:"updateUserInfo",
+					data:{
+						'userRealName':userRealName,
+						'userName':userName,
+						'userMobile':userMobile,
+//						'userEmail':userEmail
+					},
+					dataType:'json',
+					success:function(data){
+						console.log(data)
+						if(data.state == 'success'){
+		    				layer.msg('个人资料修改成功');
+		    				setTimeout(function () {
+								window.location.reload()
+							},500)	
+		    			}else if(data.state == 'failed'){
+							layer.msg('个人资料修改失败！异常码：'+data.msg)
+						}else if(data.state == 'error'){
+							layer.msg('提交失败，系统异常！异常码：'+data.msg)
+						}
+					},
+					error:function(data){
+						console.log(data)
+					}
+				});
+			})
+		</script>
+	</body>
+</html>

@@ -1,0 +1,48 @@
+#公共配置
+spring:
+  profiles:
+    active: dev
+  application:
+    name: consumer-shop
+  sleuth:
+    sampler:
+      percentage: 1.0
+      
+server:
+  port: 8801
+  
+feign:
+  hystrix:
+    enabled: true #开启熔断
+    
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
+            
+#开发环境
+---
+spring:
+  profiles: dev
+  zipkin:
+    base-url: http://localhost:8200
+  thymeleaf:
+    cache: false
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://aurora:aurora@localhost:8000/eureka/
+#生产环境
+---
+spring:
+  profiles: pro
+  zipkin:
+    base-url: http://ip:8200
+  
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://aurora:aurora@ip:8000/eureka/

@@ -1,0 +1,203 @@
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	
+	<body>
+		<div id="header" th:fragment="top_black">
+			<nav class="top-info">
+				<i th:text="${session.sessionUserEmail}"></i>,
+				<i th:text="${#httpServletRequest.getScheme()}"></i>
+				<i th:text="${#httpServletRequest.getServerName()}"></i>
+				<a href="javascript:;" id="logout-this">退出</a>
+				<div class="myZone">个人中心
+					<ul>
+						<li onclick="sub_password()">
+							修改密码
+							<!--<a href="<%=basePath%>myzone/changePassword">修改密码</a>-->
+						</li>
+						<li onclick="sub_info()">个人资料</li>
+					</ul>
+				</div>
+			</nav>
+			<form th:method="post" th:action="@{/home/passwordPage}" name="password" id="password" class="form-inline" target="_blank"></form>
+			<form th:method="post" th:action="@{/home/personalInfo}" name="info" id="info" class="form-inline" target="_blank"></form>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+				function sub_password(){
+					$('#password').submit();
+				}
+				function sub_info(){
+					$('#info').submit();
+				}
+				function nav_h(){
+					$('body').height($('html').height());
+					var b_h = $('body').height();
+					$('#left-menu').css('height',b_h-100+'px');
+				}
+				$('#logout-this').on('click',function(){	
+					layer.confirm('确定退出登录？',function(index){
+						$.ajax({
+							type:"post",
+							url:"../login/logout",
+							dataType:'json',
+							success:function(data){
+								console.log(data)
+								if(data.state == 'success'){
+									window.location.href = '../login/toLogin';
+								}else if(data.state == 'failed'){
+									layer.msg('退出失败！异常码：'+data.msg)
+								}else if(data.state == 'error'){
+									layer.msg('系统异常！异常码：'+data.msg)
+								}
+							},
+							error:function(data){
+								console.log(data)
+							}
+						});
+						layer.close(index)
+					})
+				})
+				$(function(){
+					nav_h();
+					$(window).resize(function(){
+						nav_h()
+					})
+					$('.title').on('click',function(){
+						var top = $(this).parent()
+						if(top.hasClass('show-top')){
+							top.removeClass('show-top');
+							top.addClass('close-top');
+							$(this).find('i').removeClass('icon-show');
+							$(this).find('i').addClass('icon-close');
+						}else if(top.hasClass('close-top')){
+							top.removeClass('close-top');
+							top.addClass('show-top');
+							$(this).find('i').removeClass('icon-close');
+							$(this).find('i').addClass('icon-show');
+						}
+					})
+					
+				})
+			/*]]>*/	
+			</script>
+		</div>
+		<div id="top-list" th:fragment="topMenu">
+			<div id="top-box" >
+				<div class="top-list-box">
+					<input id="userEmail" type="hidden" value="${userEmail}" />
+					<div id="header">
+						<nav class="top-info">
+							<i th:text="${session.sessionUserEmail}"></i>,
+							<a href="javascript:;" id="logout-this">退出</a>
+							<div class="myZone">个人中心
+								<ul>
+									<li onclick="sub_password()">
+										修改密码
+										<!--<a href="<%=basePath%>myzone/changePassword">修改密码</a>-->
+									</li>
+									<li onclick="sub_info()">个人资料</li>
+								</ul>
+							</div>
+						</nav>
+					</div>
+					<form th:method="post" th:action="@{/home/passwordPage}" name="password" id="password" class="form-inline" target="_blank"></form>
+					<form th:method="post" th:action="@{/home/personalInfo}" name="info" id="info" class="form-inline" target="_blank"></form>
+					
+					<div id="left-menu">
+						<ul id="nav">
+							
+							<li class="top close-top" th:each="list:${session.sessionUserMenu}">
+								<h3 class="title">
+									<b th:text="${list.menuName}"></b>
+									<i class="icon-close"></i>
+								</h3>
+								<ul class="subnav" th:if="${#lists.size(list.subMenu)} gt 0">
+									<li class="sublist" th:each="list2:${list.subMenu}">
+										<a th:href="@{${basePath}+${list2.menuURL}}" th:text="${list2.menuName}" th:target="(${list2.menuName}  eq '商品录入' or ${list2.menuName} eq '品牌录入') ? '_blank' : ''"></a>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+				var menuList = [[${sessionUserMenu}]];
+				new Vue({
+					el:'#top-box',
+					data:{
+						menuList:menuList
+					},
+					methods:{
+						
+					}
+				})
+				function sub_password(){
+					$('#password').submit();
+				}
+				function sub_info(){
+					$('#info').submit();
+				}
+				function nav_h(){
+					$('body').height($('html').height());
+					var b_h = $('body').height();
+					$('#left-menu').css('height',b_h-100+'px');
+				}
+				$('#logout-this').on('click',function(){	
+					layer.confirm('确定退出登录？',function(index){
+						$.ajax({
+							type:"post",
+							url:"../login/logout",
+							dataType:'json',
+							success:function(data){
+								console.log(data)
+								if(data.state == 'success'){
+									window.location.href = '../login/toLogin';
+								}else if(data.state == 'failed'){
+									layer.msg('退出失败！异常码：'+data.msg)
+								}else if(data.state == 'error'){
+									layer.msg('系统异常！异常码：'+data.msg)
+								}
+							},
+							error:function(data){
+								console.log(data)
+							}
+						});
+						layer.close(index)
+					})
+				})
+				$(function(){
+					nav_h();
+					$(window).resize(function(){
+						nav_h()
+					})
+					$('.title').on('click',function(){
+						var top = $(this).parent()
+						if(top.hasClass('show-top')){
+							top.removeClass('show-top');
+							top.addClass('close-top');
+							$(this).find('i').removeClass('icon-show');
+							$(this).find('i').addClass('icon-close');
+						}else if(top.hasClass('close-top')){
+							top.removeClass('close-top');
+							top.addClass('show-top');
+							$(this).find('i').removeClass('icon-close');
+							$(this).find('i').addClass('icon-show');
+						}
+					})
+					var Url = window.location.href;
+					console.log(Url)
+					for(var i = 0;i < $('.sublist').length;i++){
+						if($('.sublist').eq(i).find('a').attr('href') == Url){
+							$('.sublist').eq(i).parent().parent().find('.title').trigger('click');
+							$('.sublist').eq(i).addClass('active')
+							return
+						}
+					}
+					
+				})
+			/*]]>*/	
+			</script>
+		</div>
+	</body>
+</html>	

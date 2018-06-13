@@ -1,0 +1,462 @@
+<html lang="en" >
+	<head>
+		<title>用户列表</title>
+		<div th:replace="../templates/admin/index/headLink :: links"></div>
+		<script th:src="@{http://libs.baidu.com/bootstrap/3.0.3/js/bootstrap.min.js}"></script>
+		<script th:src="@{/plugin/bootstrap-multiselect/bootstrap-multiselect.js}"></script>
+		<link rel="stylesheet" th:href="@{/plugin/bootstrap-multiselect/bootstrap-multiselect.css}"/>
+	</head>
+	<body id="main-body" th:with="basePaths=(${#httpServletRequest.getServerName()} eq 'localhost' ? '11': '222')">
+		<div th:replace="../templates/admin/index/top :: topMenu"></div>
+		<div id="main">
+			<form th:method="post" th:action="@{/systemUser/getUserList}" id="serchForm" name="serchForm">
+			<div class="main-box">
+				<h1 class="title">用户管理</h1>
+				<!--<th:block th:if="${#httpServletRequest.getServerName()} eq 'localhost'">
+					<th:block th:with="basePath=${#httpServletRequest.getScheme()}">
+						<i th:text="${basePath}"></i>
+					</th:block>
+					
+				</th:block>-->
+				<!--<i th:text="${basePath}"></i>-->
+				
+				<hr />
+				<div class="filter-box">
+					<input type="text" class="pd" name="keywords" id="keywords" v-model="pd.keywords" th:onkeydown="'javascript:if(event.keyCode==13) {return false}'" placeholder="输入用户名/手机号"/>
+					<input type="button" class="loii-btn loii-btn-default" value="查询" th:onclick="'javascript:user_c.search(0)'"/>
+					<input type="button" class="loii-btn loii-btn-danger fl-right" value="删除" th:onclick="'javascript:user_c.delete_multi()'"/>
+					<input type="button" class="loii-btn loii-btn-warning fl-right" value="新增" th:onclick="'javascript:user_c.addUser()'"/>
+				</div>
+				<hr />
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th><input type="checkbox" id="checkAll" name="checkall"/></th>
+							<th>用户名/邮箱</th>
+							<th>姓名/手机号</th>
+							<th class="select-box" >
+								<select name="roleID" class="pd" id="roleID" v-model="pd.roleID" th:onchange="'javascript:user_c.search(1)'">
+									<option value="">角色</option>
+									<option v-for="role in roleList" :value="role.roleID">{{role.roleName}}</option>
+								</select>
+							</th>
+							<th class="select-box">
+								<select name="userStatus" class="pd" id="userStatus" v-model="pd.userStatus" th:onchange="'javascript:user_c.search(2)'">
+									<option value="">状态</option>
+									<option v-for="(state,index) in stateList" :value="index+1">{{state}}</option>
+								</select>
+							</th>
+							<th>IP</th>
+							<th>最后登录时间</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="(user,index) in userList">
+							<td><input type="checkbox" class="check-td" name="check" :data-index="index"/></td>
+							<td class="line-2">
+								<i>{{user.userName}}</i>
+								<i>{{user.userEmail}}</i>
+							</td>
+							<td class="line-2">
+								<i>{{user.userRealName}}</i>
+								<i>{{user.userMobile}}</i>
+							</td>
+							<td>{{user.roleNames}}</td>
+							<td>{{stateList[user.userStatus-1]}}</td>
+							<td>{{user.userIP}}</td>
+							<td>{{user.lastLoginTime}}</td>
+							<td class="line-op">
+								<input type="button" class="loii-btn-s loii-btn-warning" :data-index="index" th:onclick="'javascript:user_c.see_user(this)'" value="修改"/>
+								<input type="button" class="loii-btn-s loii-btn-danger" :data-index="index" th:onclick="'javascript:user_c.delete_user(this)'" value="删除"/>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				
+				<div th:replace="../templates/admin/index/page :: page"></div>
+				<!--添加用户-->
+				<div class="addUser-box">
+					<h3>添加新用户</h3>
+					<div class="alter-info" id="newUser">
+						<h5>
+							<label>昵称:</label>
+							<input v-model="newUser.userName"/>
+						</h5>
+						<h5>
+							<label>姓名:</label>
+							<input v-model="newUser.userRealName"/>
+						</h5>
+						<h5>
+							<label>手机号:</label>
+							<input v-model="newUser.userMobile"/>
+						</h5>
+						<h5>
+							<label>邮箱:</label>
+							<input v-model="newUser.userEmail"/>
+						</h5>
+						<h5>
+							<label>密码:</label>
+							<input v-model="newUser.userPassword"/>
+						</h5>
+						<h5 class="select-box">
+							<label>角色ID:</label>
+							<select name="userRoleID" id="userRoleID" multiple="multiple">
+								<option th:each="role:${allRoleListToSelect}" th:text="${role.roleName}" th:value="${role.roleID}"></option>
+							</select>
+						</h5>
+					</div>
+					<div class="alter-whether">
+						<input type="button" id="quit-add" class="btn btn-default" value="取消" th:onclick="'javascript:user_c.quitAdd()'"/>
+						<input type="button" id="saveAdd" class="btn btn-success" value="确认"  th:onclick="'javascript:user_c.saveAdd()'"/>
+					</div>
+				</div>
+				<!--用户信息修改-->
+				<div class="alterUser-box">
+					<h3>用户信息修改</h3>
+					<div id="editUser" class="alter-info">
+						<h5>
+							<label>昵称:</label>
+							<input v-model="editUser.userName"/>
+						</h5>
+						<h5>
+							<label>姓名:</label>
+							<input v-model="editUser.userRealName"/>
+						</h5>
+						<h5>
+							<label>手机号:</label>
+							<input v-model="editUser.userMobile"/>
+						</h5>
+						<h5>
+							<label>邮箱:</label>
+							<input v-model="editUser.userEmail"/>
+						</h5>
+						<h5>
+							<label>密码:</label>
+							<input v-model="editUser.userPassword" placeholder="内容为空，默认不修改"/>
+						</h5>
+						<h5 class="select-box">
+							<label>角色ID:</label>
+							<select id="edit-userRoleID" multiple="multiple">
+								<option th:each="role:${allRoleListToSelect}" th:text="${role.roleName}" th:value="${role.roleID}"></option>
+							</select>
+						</h5>
+							
+						<h5 class="select-box">
+							<label>状态:</label>
+							<select name="" id="edit-userStatus" v-model="editUser.userStatus">
+								<option value="">全部</option>
+								<option value="1">在线</option>
+								<option value="2">离线</option>
+								<option value="3">禁用</option>
+							</select>
+						</h5>
+					</div>
+					<div class="alter-whether">
+						<input type="button" id="quit-alter" class="btn btn-default" value="取消" th:onclick="'javascript:user_c.quitEdit()'"/>
+						<input type="button" id="saveUser" class="btn btn-success" value="确认" th:onclick="'javascript:user_c.saveEdit()'"/>
+					</div>
+				</div>
+			</div>				
+		</form>			
+		</div>
+		<script type="text/javascript" th:src="@{/js/common.js}" language="javascript"></script>
+		<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+//		$(document).ready(function() {
+//						        
+//						        $('#userRoleID').val(['cheese','mozarella'])
+//						        $('#userRoleID').multiselect('refresh');
+//						    });
+			
+			function search(i){
+				if(i==1){
+					$('#currentPage').val(1);
+					$('#fromIndex').val(0);
+				}
+				$('#serchForm').submit()
+			}
+			function goPage(pageNo,i) {
+				$('#currentPage').val(pageNo);
+				var fromIndex = (pageNo - 1) * $('#pageSize').val();
+				if(fromIndex < 0) {
+					fromIndex = 0;
+				}
+				$('#fromIndex').val(fromIndex);
+				search()
+			}
+			function goPages(){//goPage($('#toPage').val() ge ${page.totalPage} ? ${page.totalPage}:$('#toPage').val())
+				var totalPage = user_c.page.totalPage;
+				if($('#toPage').val() > totalPage ){
+					$('#currentPage').val(totalPage)
+				}else{
+					$('#currentPage').val($('#toPage').val())
+				}
+				
+				console.log($('#toPage').val(),$('#currentPage').val(),totalPage)
+//				return
+				var fromIndex = ($('#currentPage').val() - 1) * $('#pageSize').val();
+				if(fromIndex < 0) {
+					fromIndex = 0;
+				}
+				$('#fromIndex').val(fromIndex);
+				search()
+			}
+
+			var userList = [[${userList}]],
+				pd = [[${pd}]],
+				roleList = [[${allRoleListToSelect}]]
+				page = [[${page}]];
+			if(!pd.keywords){
+				pd.keywords = ''
+			}
+			if(!pd.roleID){
+				pd.roleID = ''
+			}
+			if(!pd.userStatus){
+				pd.userStatus = ''
+			}
+			console.log(userList)
+			user_c =  new Vue({
+				el:'.main-box',
+				data:{
+					userList:userList,
+					roleList:roleList,
+					pd:pd,
+					stateList:['在线','离线','禁用'],
+					page:page,
+					newUser:{//新增用户
+						userName:'',
+						userRealName:'',
+						userMobile:'',
+						userEmail:'',
+						userPassword:123456,
+						userRoleIDs:'',
+						userRoleNames:''
+					},
+					editUser:{//修改用户
+						
+					}
+				},
+				methods:{
+					search:function(i){
+						if(i == 0){
+							pd.roleID = ''
+							pd.userStatus = ''
+						}else if(i == 1){
+							pd.keywords = ''
+							pd.userStatus = ''
+						}else if(i == 2){
+							pd.keywords = ''
+							pd.roleID = ''
+						}
+						setTimeout(function(){search(1)},100)
+						
+					},
+					addUser:function(){
+						$('#userRoleID').multiselect({
+							nonSelectedText: '选择角色',
+							numberDisplayed:10
+						})
+						$('#userRoleID').multiselect('refresh');
+						addIndex = layer.open({
+							type: 1,
+							title: false,
+							closeBtn: 1,
+							area: '800px',
+							skin: 'layui-layer-nobg', //没有背景色
+							shadeClose: false,
+							content: $('.addUser-box')
+						})
+					},
+					saveAdd:function(){//保存新增
+						for(var i = 0;i < 5;i++){
+							if($.trim($('#newUser h5').eq(i).find('input').eq(0).val()) == ''){
+								return layer.msg('请填写'+$('#newUser h5').eq(i).find('label').text().replace(':','')+'信息')
+							}
+						}
+						var arr_id = [],arr_name = [];
+						$('#userRoleID option:selected').each(function(){//角色	
+							arr_id.push($(this).val());
+							arr_name.push($(this).text())
+						}) 
+						if(!arr_id.length){
+							return layer.msg('请选择角色')
+						}
+						this.newUser.userRoleIDs = arr_id.join(',')
+						this.newUser.userRoleNames = arr_name.join(',')
+						var list = this.newUser;
+						console.log(list)
+						$.ajax({
+						    type:'post',
+						    url:'saveNewUser',
+						    data:list,
+						    dataType:'json',
+						    success:function(data){
+						    	console.log(data)
+						        if(data.state == 'success'){
+						            layer.msg('添加用户成功')
+						            window.location.reload()
+						        }else if(data.state == 'error'){
+						            layer.msg(data.msg)
+						        }else if(data.state == 'failed'){
+						            layer.msg(data.msg)
+						        }
+						    }
+						});
+					},
+					quitAdd:function(){//取消保存
+						layer.close(addIndex)
+					},
+					see_user:function(i){//修改查看
+						var j = this.userList[$(i).data('index')].userEmail
+						console.log(j)
+						$.ajax({
+						    type:'post',
+						    url:'getUser',
+						    data:{
+						    	userEmail:j
+						    },
+						    dataType:'json',
+						    success:function(data){
+						    	console.log(data)
+						        if(data.state == 'success'){
+						            layer.msg('成功')
+						            var list = data.result
+						            Vue.set(user_c.editUser,'userRoleIDs',list.roleIDs)
+						            Vue.set(user_c.editUser,'userRoleNames',list.roleNames)
+						            Vue.set(user_c.editUser,'userEmail',list.userEmail)
+						            Vue.set(user_c.editUser,'userMobile',list.userMobile)
+						            Vue.set(user_c.editUser,'userName',list.userName)
+						            Vue.set(user_c.editUser,'userRealName',list.userRealName)
+						            Vue.set(user_c.editUser,'userStatus',list.userStatus)
+						            Vue.set(user_c.editUser,'userPassword','')
+//						            arr_val = list.roleIDs.join(',')
+						            var arr_val = list.roleIDs.split(',')
+						            if(arr_val.length > 2){
+						            	arr_val.length --
+						            }
+						            console.log(arr_val)
+						            $('#edit-userRoleID').multiselect({
+										nonSelectedText: '选择角色',
+										numberDisplayed:10,
+									})
+						             $('#edit-userRoleID').val('')//清空选中
+						            $('#edit-userRoleID').multiselect('refresh');
+									$('#edit-userRoleID').multiselect('select',arr_val)
+									
+						            editIndex = layer.open({
+										type: 1,
+										title: false,
+										closeBtn: 1,
+										area: '800px',
+										skin: 'layui-layer-nobg', //没有背景色
+										shadeClose: false,
+										content: $('.alterUser-box')
+									})
+						        }else if(data.state == 'error'){
+						            layer.msg(data.msg || 'error')
+						        }else if(data.state == 'failed'){
+						            layer.msg(data.msg)
+						        }
+						    }
+						});
+					},
+					saveEdit:function(){//保存修改
+						for(var i = 0;i < 4;i++){
+							if($.trim($('#editUser h5').eq(i).find('input').eq(0).val()) == ''){
+								return layer.msg('请填写'+$('#editUser h5').eq(i).find('label').text().replace(':','')+'信息')
+							}
+						}
+						var arr_id = [],arr_name = [];
+						$('#edit-userRoleID option:selected').each(function(){//角色	
+							arr_id.push($(this).val());
+							arr_name.push($(this).text())
+						}) 
+						if(!arr_id.length){
+							return layer.msg('请选择角色')
+						}
+						this.editUser.userRoleIDs = arr_id.join(',')
+						this.editUser.userRoleNames = arr_name.join(',')
+						var list = this.editUser;
+					
+						delete list.userStatus
+						console.log(list)
+						$.ajax({
+						    type:'post',
+						    url:'updateUser',
+						    data:list,
+						    dataType:'json',
+						    success:function(data){
+						    	console.log(data)
+						        if(data.state == 'success'){
+						            layer.msg('添加用户成功')
+						            window.location.reload()
+						        }else if(data.state == 'error'){
+						            layer.msg(data.msg)
+						        }else if(data.state == 'failed'){
+						            layer.msg(data.msg)
+						        }
+						    }
+						});
+					},
+					quitEdit:function(){//取消修改
+						layer.close(editIndex)
+					},
+					delete_user:function(i){//删除单个用户
+						var j = this.userList[$(i).data('index')].userID
+						this.deletes(j)
+					},
+					delete_multi:function(){//删除多个用户
+						console.log($("input[name='check']").length)
+						arr_index = [];
+						$("input[name='check']").each(function(){
+							if($(this).is(':checked')){
+								var i = user_c.userList[$(this).data('index')].userID
+								arr_index.push(i)
+							}
+						})
+						if(!arr_index.length){
+							return layer.msg('请先选择要删除的用户！')
+						}else{
+							console.log(arr_index)
+							this.deletes(arr_index.join(','))
+						}
+						
+					},
+					deletes:function(i){//删除函数
+						console.log(i)
+						layer.confirm('确认删除所选用户？',function(index){
+							$.ajax({
+							    type:'post',
+							    url:'deleteUser',
+							    data:{
+							    	userIDs:i
+							    },
+							    dataType:'json',
+							    success:function(data){
+							        if(data.state == 'success'){
+							            layer.msg('删除成功')
+							            window.location.reload()
+							        }else if(data.state == 'error'){
+							            layer.msg(data.msg)
+							            layer.close(index)
+							        }else if(data.state == 'failed'){
+							            layer.msg(data.msg)
+							            layer.close(index)
+							        }
+							    },
+							    error:function(){
+							    	layer.msg('网络出错')
+							    	layer.close(index)
+							    }
+							});
+						})
+					}
+				}
+			})
+			check_box('#checkAll', "input[name='check']");
+		/*]]>*/	
+		</script>
+	</body>
+</html>

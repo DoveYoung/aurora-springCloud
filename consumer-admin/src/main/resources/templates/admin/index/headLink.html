@@ -1,0 +1,24 @@
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	
+	<body>
+		<th:block th:fragment="links">
+			<meta name="context-path" th:content="@{/}"/>
+
+			<meta charset="UTF-8" />
+			<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+			<link rel="stylesheet" th:href="@{/plugin/bootstrap-3.3.7/css/bootstrap.min.css}" />
+			<link rel="stylesheet/less" type="text/css" th:href="@{/css/admin.less}" />
+			<script th:src="@{/js/less.js}" language="javascript"></script>
+			<script th:src="@{/js/jquery-3.2.1.min.js}" language="javascript"></script>
+			<script th:src="@{/plugin/layer/layer.js}" language="javascript"></script>
+			<script th:src="@{/js/vue.js}"></script>
+			<style>
+				[v-cloak]{
+					display:none !important;
+				}
+			</style>
+			
+		</th:block>
+	</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<meta charset="utf-8" />
+		<title>北极光登录</title>
+		<link rel="stylesheet/less" type="text/css" href="/css/admin.less" th:href="@{/css/admin.less}" />
+		<script src="/js/less.js" th:src="@{/js/less.js}"></script>
+		<script src="/js/jquery-3.2.1.min.js" th:src="@{/js/jquery-3.2.1.min.js}"></script>
+		<script src="/plugin/layer/layer.js" th:src="@{/plugin/layer/layer.js}"></script>
+		<style>
+			
+		</style>
+	</head>
+
+	<body id="login-body" style="display: table;width:100%;height:100%; display:flex;justify-content:center;align-items:center;">
+		<div id="loginBox">
+			<h1>登录</h1>
+			<form action="" method="post" name="loginForm" id="loginForm">
+				<div class="login-box">
+					<i class="user"></i>
+					<input name="loginname" id="loginname" placeholder="用户名" />
+					<select id="email">
+						<option value="@loiitrade.com">@loiitrade.com</option>
+					</select>
+				</div>
+				<div class="login-box">
+					<i class="pw"></i><input name="password" id="password" type="password" placeholder="密码" />
+				</div>
+				<div class="login-box02">
+					<i class="yan">验</i>
+					<div class="mask"></div>
+					<input id="range-f" type="range" value="0" min="1" max="100" oninput="showVal(this.value)" onchange="showVal(this.value)"/>
+					<input id="to-login" value="登录" readonly="readonly" />
+				</div>
+			</form>
+		</div>
+		<script type="text/javascript" th:inline="javascript">
+			/*<![CDATA[*/
+			var drag = false
+			function showVal(i){
+				console.log(i)
+				$('.mask').css('width',(1.8*i)+'px');
+				if(i <= 2.8){
+					$('.mask').css('background','none')
+				}else{
+					$('.mask').css('background','#76cf25')
+				}
+				if(i == 100){
+					document.getElementById("range-f").disabled = true;
+					drag = true;
+					$('.mask').text('验证成功')
+				}
+			}
+			$(function(){
+				
+				$('#to-login').on('click',function(){
+					console.log(drag)
+					var userEmail =  $.trim($("#loginname").val())+$('#email').val(),
+					password =  $.trim($("#password").val());
+					if(userEmail == ''){
+						return layer.msg('请填写用户名');
+					}
+					if(password == ''){
+						return layer.msg('请填写用密码');
+					}
+					if(!drag){
+						return layer.msg('请完成拖拽验证！')
+					}
+					$.ajax({
+					    type:'post',
+					    url:'verify',
+					    data:{
+					    	userEmail:userEmail,
+							password:password
+					    },
+					    dataType:'json',
+					    success:function(data){
+					    	console.log(data)
+					        if("success" == data.state){
+								//window.location.href="login/test/default";
+								window.location.href="../login/home";
+							}else if("usererror" == data.result){
+								layer.msg('用户名不存在！异常码：'+data.msg);
+							}else if("passworderror" == data.result){
+								layer.msg('密码不正确！异常码：'+data.msg);
+							}else if("codeerror" == data.result){
+								layer.msg('验证码输入有误！异常码：'+data.msg);
+							}else if('userlock' == data.result){
+								layer.msg('账号被禁用！异常码：'+data.msg);
+							}
+					    }
+					});
+				})
+			})
+			//			var path = /*[[@{/Path}]]*/;
+			//			console.log(path)
+			/*]]>*/
+		</script>
+	</body>
+
+</html>

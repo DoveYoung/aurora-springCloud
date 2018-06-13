@@ -1,0 +1,35 @@
+#公共配置
+spring:
+  profiles:
+    active: dev
+  application:
+    name: provider-user
+  sleuth:
+    sampler:
+      percentage: 1.0
+server:
+  port: 8301
+      
+#开发环境
+---
+spring:
+  profiles: dev
+  zipkin:
+    base-url: http://localhost:8200
+  thymeleaf:
+    cache: false
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://aurora:aurora@localhost:8000/eureka/
+  
+#生产环境
+---
+spring:
+  profiles: pro
+  zipkin:
+    base-url: http://ip:8200  
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://aurora:aurora@ip:8000/eureka/

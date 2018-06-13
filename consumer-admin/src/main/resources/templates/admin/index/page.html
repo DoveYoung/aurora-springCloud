@@ -1,0 +1,31 @@
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	
+	<body>
+		<th:block th:fragment="page">
+			<!--跳转页容器-->
+			<input name="currentPage" id="currentPage" th:value="${page.currentPage}" type="hidden" />
+			<input name="fromIndex" id="fromIndex" th:value="${page.fromIndex}" type="hidden" />
+			<input type="hidden" name="pageSize" id="pageSize" th:value="${page.pageSize}" />
+			
+			<!--首页-->
+			<div id="page-list">
+				<a href="javascript:;" th:class="${page.currentPage} == 1 ? 'disabled'" th:onclick="'javascript:goPage(1)'">首页</a>
+				<!--上一页-->
+				<a href="javascript:;" th:class="${page.currentPage} == 1 ? 'disabled'" th:onclick="'javascript:goPage('+(${page.currentPage}-1)+')'">上一页</a>
+				<!--下一页-->
+				<a href="javascript:;" th:class="${page.currentPage} == ${page.totalPage} ? 'disabled'" th:onclick="'javascript:goPage('+(${page.currentPage}+1)+')'">下一页</a>	
+				<!--末页-->
+				<a href="javascript:;" th:class="${page.currentPage} == ${page.totalPage} ? 'disabled'" th:onclick="'javascript:goPage(${page.totalPage})'">末页</a>
+				<!--跳页-->
+				<input name="toPage" id="toPage" th:value="${page.currentPage}" min="1" max="${page.totalPage}" type="number" class="am-form-field" autocomplete="off" th:onKeyUp="'javascript:only_num(this)'" 
+					th:onafterpaste="'javascript:only_num(this)'"/>
+					<!--goPage($('#toPage').val() ge ${page.totalPage} ? ${page.totalPage}:$('#toPage').val())-->
+				<a href="javascript:;" th:onclick="'javascript:goPages()'">跳转</a>
+				<i>共<th:block th:text="${page.totalPage}"></th:block>页,<th:block th:text="${page.totalRecord}"></th:block>条记录.</i>
+				<!--每页显示${page.pageSize}条，-->
+			</div>
+			
+		</th:block>
+	</body>
+</html>	

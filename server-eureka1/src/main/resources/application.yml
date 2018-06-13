@@ -1,0 +1,42 @@
+#单eureka-server
+spring:
+  application:
+    name: server-eureka1
+    
+server:
+  port: 8000
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    registerWithEureka: false  #表示是否将自己注册到Eureka Server，默认为true。
+    fetchRegistry: false  #表示是否从Eureka Server获取注册信息，默认为true。
+    serviceUrl:
+      #设置与Eureka Server交互的地址，查询服务和注册服务都需要依赖这个地址。多个地址可使用 , 分隔。
+      defaultZone: http://aurora:aurora@${eureka.instance.hostname}:${server.port}/eureka/
+  server:
+    enable-self-preservation: true  #开启自我保护机制
+
+security:
+  basic:
+    enabled: true #开启认证
+  user:
+    name: aurora  #用户名
+    password: aurora  #密码
+
+#集群eureka-server1
+#spring:
+#  application:
+#   name: eureka-server
+#  profiles: eureka-server1
+#server:
+#  port: 8001
+#eureka:
+#  instance:
+#    hostname: eureka-server1
+#  client:
+#    serviceUrl:
+#      defaultZone: http://eureka-server1:8001/eureka/,http://eureka-server2:8002/eureka/
+#  server:
+#    enable-self-preservation: true  #开启自我保护机制

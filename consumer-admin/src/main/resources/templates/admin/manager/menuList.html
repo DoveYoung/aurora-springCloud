@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>菜单管理</title>
+		<div th:replace="../templates/admin/index/headLink :: links"></div>
+	</head>
+	
+	<body id="main-body">
+		<div th:replace="../templates/admin/index/top :: topMenu"></div>
+		<div id="main">
+			<form th:method="post" th:action="@{/systemMenu/getMenuList}" id="serchForm" name="serchForm">
+				<div class="main-box">
+					<h1 class="title">菜单管理</h1>
+					<hr />
+					<div class="filter-box">
+						<input type="text" name="menuName" id="menuName" v-model="pd.menuName" th:onkeydown="'javascript:if(event.keyCode==13) {return false}'" placeholder="菜单名"/>
+						<input type="button" class="loii-btn loii-btn-default" value="查询" th:onclick="'javascript:menu_c.search(0)'"/>						
+						<input type="button" class="loii-btn loii-btn-warning fl-right" value="新增" th:onclick="'javascript:menu_c.addMenu()'"/>
+					</div>
+					<hr />
+					<table class="table table-bordered table-s">
+						<thead>
+							<tr>
+								<th>菜单ID:(名称)</th>
+								<th>URL</th>
+								<th>父级ID</th>
+								<th>顺序</th>
+								<th class="select-box">
+									<select name="userStatus" class="pd" id="userStatus" v-model="pd.menuLevel" th:onchange="'javascript:menu_c.search(2)'">
+										<option value="">级别</option>
+										<option value="1">一级菜单</option>
+										<option value="2">二级菜单</option>
+										<option value="3">三级菜单</option>
+									</select>
+								</th>
+								<th>状态</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(menu,index) in menuList">
+								<td>
+									<i>{{menu.menuID}}:{{menu.menuName}}</i>
+								</td>
+								<td>{{menu.menuURL}}</td>
+								<td>{{menu.parentMenu}}</td>
+								<td>{{menu.menuOrder}}</td>
+								<td>{{menu.menuLevel}}</td>
+								<td>{{menu.menuState == 1 ? '可用' : '不可用'}}</td>
+								<td class="line-op">
+									<input type="button" class="loii-btn-s loii-btn-warning" :data-index="index" th:onclick="'javascript:menu_c.see_user(this)'" value="修改"/>
+									<input type="button" class="loii-btn-s loii-btn-danger" :data-index="index" th:onclick="'javascript:menu_c.delete_user(this)'" value="删除"/>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<div th:replace="../templates/admin/index/page :: page"></div>
+					<div class="addUser-box">
+						<h3>添加新菜单</h3>
+						<div class="alter-info" id="newMenu">
+							<h5>
+								<label>菜单名称:</label>
+								<input id="add-menuName" value=""/>
+							</h5>
+							<h5>
+								<label>级别{{level}}:</label>
+								<select id="add-menuLevel" v-model="level">
+									<option value="">请选择</option>
+									<option value="1">一级菜单</option>
+									<option value="2">二级菜单</option>
+									<option value="3">三级菜单</option>
+								</select>
+							</h5>
+							<h5>
+								<label>父级ID:</label>
+								<select id="add-menuParentID" v-if="level == '' || level == 1">
+									<option value="0" selected="selected">一级菜单</option>
+								</select>
+								<select id="add-menuParentID" v-if="level == 2">
+									<option value="0" selected="selected">请选择父级菜单</option>
+									<option v-for="menu in menuList1" :value="menu.menuID">{{menu.menuID}}:{{menu.menuName}}</option>
+								</select>
+								<select id="add-menuParentID" v-if="level == 3">
+									<option value="0" selected="selected">请选择父级菜单</option>
+									<option v-for="menu in menuList2" :value="menu.menuID">{{menu.menuID}}:{{menu.menuName}}</option>
+								</select>
+							</h5>
+							<h5>
+								<label>URL:</label>
+								<input id="add-menuURL" value=""/>
+							</h5>
+							<h5>
+								<label>排序:</label>
+								<input id="add-menuOrder" value=""/>
+							</h5>
+							<h5>
+								<label>状态:</label>
+								<select id="add-menuState">
+									<option value="1">可用</option>
+									<option value="4">不可用</option>
+								</select>
+							</h5>
+						</div>
+						<div class="alter-whether">
+							<input type="button" id="quit-add" class="btn btn-default" th:onclick="'javascript:menu_c.quit_add()'" value="取消" />
+							<input type="button" id="saveAdd" class="btn btn-success" th:onclick="'javascript:menu_c.save_add()'" value="确认" />
+						</div>
+					</div>
+					<div class="alterUser-box" style="height:460px">
+						<h3>菜单信息修改</h3>
+						<div class="alter-info" id="newMenu" style="height:310px">
+							<i id="edit-meunID" style="display:none"></i>
+							<h5>
+								<label>菜单名称:</label>
+								<input id="edit-menuName" value=""/>
+							</h5>
+							<h5>
+								<label>父级ID:</label>
+								<select name="" id="edit-menuParentID">
+									<option value="0"></option>	
+									<c:forEach items="${menuListToSelect}" var="menu">
+										<option value="${menu.menu_id}">${menu.menu_id}:${menu.menu_name}</option>
+									</c:forEach>
+								</select>
+							</h5>
+							<h5>
+								<label>URL:</label>
+								<input id="edit-menuURL" value=""/>
+							</h5>
+							<h5>
+								<label>排序:</label>
+								<input id="edit-menuOrder" value=""/>
+							</h5>
+							<h5>
+								<label>级别:</label>
+								<select id="edit-menuLevel">
+									<option value=""></option>						
+									<option value="1">一级菜单</option>
+									<option value="2">二级菜单</option>
+									<option value="3">三级菜单</option>
+								</select>
+							</h5>
+							<h5>
+								<label>状态:</label>
+								<select id="edit-menuState">
+									<option value="1">可用</option>
+									<option value="4">不可用</option>
+								</select>
+							</h5>
+						</div>
+						<div class="alter-whether">
+							<input type="button" class="btn btn-default alter-no" value="取消" />
+							<input type="button" class="btn btn-success alter-save" value="保存" />
+						</div>
+					</div>
+				</div>
+			</form>
+			
+		</div>	
+		<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+			function search(i){
+				if(i==1){
+					$('#currentPage').val(1);
+					$('#fromIndex').val(0);
+				}
+				$('#serchForm').submit()
+			}
+			function goPage(pageNo,i) {
+				$('#currentPage').val(pageNo);
+				var fromIndex = (pageNo - 1) * $('#pageSize').val();
+				if(fromIndex < 0) {
+					fromIndex = 0;
+				}
+				$('#fromIndex').val(fromIndex);
+				search()
+			}
+			function goPages(){//goPage($('#toPage').val() ge ${page.totalPage} ? ${page.totalPage}:$('#toPage').val())
+				var totalPage = menu_c.page.totalPage;
+				if($('#toPage').val() > totalPage ){
+					$('#currentPage').val(totalPage)
+				}else{
+					$('#currentPage').val($('#toPage').val())
+				}
+				
+				console.log($('#toPage').val(),$('#currentPage').val(),totalPage)
+//				return
+				var fromIndex = ($('#currentPage').val() - 1) * $('#pageSize').val();
+				if(fromIndex < 0) {
+					fromIndex = 0;
+				}
+				$('#fromIndex').val(fromIndex);
+				search()
+			}
+			
+			var menuList = [[${menuList}]],
+				pd = [[${pd}]],
+				page = [[${page}]],
+				menuList1 = [[${firstMenuList}]],
+				menuList2 = [[${secondMenuList}]];
+//			console.log(menuList)
+			console.log(menuList2,menuList1)
+			if(!pd.menuName){
+				pd.menuName = ''
+			}
+			if(!pd.menuLevel){
+				pd.menuLevel = ''
+			}
+			console.log(pd)
+			var menu_c = new Vue({
+				el:'.main-box',
+				data:{
+					pd:pd,
+					page:page,
+					menuList:menuList,
+					level:'',//新增菜单确定菜单级别选择父级ID
+					menuList1:menuList1,
+					menuList2:menuList2
+				},
+				methods:{
+					search:function(i){
+						if(i == 0){
+							pd.menuLevel = ''
+						}else if(i == 1){
+							pd.menuName = ''
+						}
+						setTimeout(function(){search(1)},100)
+					},
+					addMenu:function(){
+						addIndex = layer.open({
+							type: 1,
+							title: false,
+							closeBtn: 1,
+							area: '800px',
+							skin: 'layui-layer-nobg', //没有背景色
+							shadeClose: false,
+							content: $('.addUser-box')
+						})
+					},
+					quit_add:function(){
+						layer.close(addIndex)
+					},
+					save_add:function(){
+						
+						if($('#add-menuName').val() == '') {
+							return layer.tips('菜单名不能为空', '#add-menuName', {
+								tips: [2, '#FFA500']
+							});
+						}
+						if($('#add-menuURL').val() == '' && !($('#add-menuLevel').val() == 1 || $('#add-menuLevel').val() == '')) {
+							return layer.tips('请输入路径', '#add-menuURL', {
+								tips: [2, '#FFA500']
+							});
+						}
+						if($('#add-menuOrder').val() == '') {
+							return layer.tips('请填写排序', '#add-menuOrder', {
+								tips: [2, '#FFA500']
+							});
+						}
+						var list = {} 
+						list.menuName = $('#add-menuName').val();
+					    list.menuParentID = $('#add-menuParentID').val();
+					    list.menuURL = $('#add-menuURL').val();
+					    list.menuLevel = $('#add-menuLevel').val();
+					    list.menuState = $('#add-menuState').val();
+					    list.menuOrder = $('#add-menuOrder').val();
+						console.log(list)
+						$.ajax({
+							type: "POST",
+							url: "saveNewMenu",
+							dataType: "json",
+							data:list,
+							success: function(data) {
+								console.log(data);
+								if(data.result == 'success') {
+									return window.location.reload()
+								}else if(data.result == 'failed'){
+									return layer.confirm('添加失败!')
+								}else if(data.result == 'error') {
+									return layer.msg('系统异常');
+								}			
+							},
+							error:function(res){
+								console.log(res)
+							}
+						})
+					}
+				}
+				
+			})
+		/*]]>*/	
+		</script>
+	</body>
+</html>

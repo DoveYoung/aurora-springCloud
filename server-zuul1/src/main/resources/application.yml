@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: server-zuul1
+  zipkin:
+    base-url: http://localhost:8200 #指定了Zipkin服务器的地址
+  sleuth:
+    sampler:
+      percentage: 1.0 #将采样比例设置为所设置的值介于0.0到1.0之间，1.0也就是全部都需要。    
+server:
+  port: 8101
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://aurora:aurora@localhost:8000/eureka/
+

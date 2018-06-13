@@ -1,0 +1,194 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "微软雅黑";
+}
+html {
+  width: 100%;
+  height: 100% !important;
+}
+body {
+  width: 100%;
+  height: 100% !important;
+}
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+}
+a {
+  color: #000;
+  text-decoration: none !important;
+}
+b {
+  font-weight: normal;
+}
+i {
+  font-style: normal;
+}
+li,
+ul {
+  list-style: none;
+}
+button {
+  border: none;
+  background: none;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+}
+img {
+  vertical-align: baseline;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+input[type="checkbox"] {
+  vertical-align: middle;
+  margin: 0;
+}
+.s {
+  background: url(https://aurora-picture.oss-cn-hangzhou.aliyuncs.com/20171124175144704135.jpg) repeat;
+  width: 800px;
+  height: 450px;
+  margin: 75px auto;
+  background-size: 800px 450px;
+}
+.loii-s {
+  background: url(../img/index.jpeg) no-repeat;
+  background-size: 600px 800px;
+  width: 600px;
+  height: 800px;
+  margin: 20px auto;
+}
+.loii-default {
+  color: #4e92df !important;
+}
+.loii-success {
+  color: #5cb85c !important;
+}
+.loii-info {
+  color: #5bc0de !important;
+}
+.loii-warning {
+  color: #f0ad4e !important;
+}
+.loii-danger {
+  color: #d9534f !important;
+}
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background: #f1f1f1;
+}
+.pointer {
+  cursor: pointer;
+}
+.disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.preview {
+  background: #eaeaea url(../img/img_up.png) center center no-repeat !important;
+}
+#login-body {
+  position: relative;
+  background: url(../img/login_bg.jpg) no-repeat;
+  background-size: cover;
+}
+#login-body #loginBox {
+  width: 500px;
+  height: auto;
+  padding-bottom: 20px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.5);
+}
+#login-body #loginBox h1 {
+  margin-top: 20px;
+  height: 40px;
+  text-align: center;
+  line-height: 40px;
+  font-size: 20px;
+  color: #fff;
+}
+#login-body #loginBox input {
+  border: none;
+}
+#login-body #loginBox .login-box {
+  width: 300px;
+  height: 40px;
+  margin: 20px auto;
+}
+#login-body #loginBox .login-box i {
+  display: block;
+  float: left;
+  margin-right: 10px;
+  width: 40px;
+  height: 40px;
+}
+#login-body #loginBox .login-box .user {
+  background: url(../img/icon_user.png) center center no-repeat;
+}
+#login-body #loginBox .login-box .pw {
+  background: url(../img/icon_pw.png) center center no-repeat;
+}
+#login-body #loginBox .login-box input {
+  display: block;
+  float: left;
+  width: 250px;
+  height: 40px;
+  line-height: 40px;
+  text-indent: 10px;
+}
+#login-body #loginBox .login-box02 {
+  width: 300px;
+  height: 30px;
+  margin: 20px auto;
+}
+#login-body #loginBox .login-box02 i {
+  display: block;
+  float: left;
+  width: 30px;
+  height: 30px;
+}
+#login-body #loginBox .login-box02 .yan {
+  margin-left: 10px;
+  line-height: 30px;
+  font-size: 14px;
+  text-align: center;
+  color: #fff;
+  background: #ff4350;
+}
+#login-body #loginBox .login-box02 #code {
+  display: block;
+  float: left;
+  margin: 0 10px;
+  width: 60px;
+  height: 30px;
+  line-height: 30px;
+  text-indent: 10px;
+}
+#login-body #loginBox .login-box02 #codeImg {
+  display: block;
+  float: left;
+  width: 80px;
+  height: 30px;
+}
+#login-body #loginBox .login-box02 #to-login {
+  display: block;
+  float: right;
+  width: 50px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  color: #fff;
+  background: #4e92df;
+  cursor: pointer;
+}

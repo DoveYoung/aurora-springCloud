@@ -1,0 +1,26 @@
+#公共配置
+spring:
+  profiles:
+    active: dev
+  application:
+    name: server-zipkin
+    
+server:
+  port: 8200
+      
+#开发环境
+---
+spring:
+  profiles: dev
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://aurora:aurora@localhost:8000/eureka/
+#生产环境
+---
+spring:
+  profiles: pro
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://aurora:aurora@ip:8000/eureka/
